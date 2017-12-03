@@ -1,8 +1,9 @@
-# static_maps_example
+# Flutter Static Maps Demo
 
-A new Flutter project.
+A sample app showing what you can do with the Google Static Maps API.
 
-## Getting Started
+Right now, there's no support for Google Maps in Flutter.
 
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+But, you can do quite a bit by leveraging [Google's Static Maps API](https://developers.google.com/maps/documentation/static-maps/).
+
+Also uses [Flutter location plugin](https://github.com/Lyokone/flutterlocation)
