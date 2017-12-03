@@ -34,14 +34,13 @@ class _MyHomePageState extends State<MyHomePage> {
   String googleMapsApi = 'AIzaSyCzxj6UFfx8uvDaaE9OSSPkjJXdou3jD9I';
   TextEditingController _latController = new TextEditingController();
   TextEditingController _lngController = new TextEditingController();
-
+  int zoom = 4;
 
   Future<Null> findLocation() async {
     Map<String, double> location;
 
     try {
       location = await _location.getLocation;
-
       setState(() {
         this.locations = [location];
       });
@@ -55,10 +54,26 @@ class _MyHomePageState extends State<MyHomePage> {
     lng = _lngController.text;
 
     setState(() {
-      locations.add({
-        "latitude": lat,
-        "longitude": lng
-      });
+      locations.add({"latitude": lat, "longitude": lng});
+    });
+  }
+
+  void increaseZoom() {
+    setState(() {
+      zoom = zoom + 1;
+    });
+  }
+
+  void decreaseZoom() {
+    setState(() {
+      zoom = zoom - 1;
+    });
+  }
+
+  void resetMap() {
+    setState(() {
+      locations = [];
+      zoom = 4;
     });
   }
 
@@ -72,19 +87,38 @@ class _MyHomePageState extends State<MyHomePage> {
           child: new Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          new StaticMap(googleMapsApi, locations: locations),
+          new Stack(
+            children: <Widget>[
+              new StaticMap(googleMapsApi, locations: locations, zoom: zoom),
+              new Positioned(
+                top: 130.0,
+                right: 10.0,
+                child: new FloatingActionButton(
+                    onPressed: increaseZoom,
+                    child: new Icon(
+                        const IconData(0xe145, fontFamily: 'MaterialIcons'))),
+              ),
+              new Positioned(
+                top: 190.0,
+                right: 10.0,
+                child: new FloatingActionButton(
+                    onPressed: decreaseZoom,
+                    child: new Icon(
+                        const IconData(0xe15b, fontFamily: 'MaterialIcons'))),
+              ),
+            ],
+          ),
           new Container(
             margin: new EdgeInsets.symmetric(vertical: 25.0),
             child: new Column(
               children: <Widget>[
-                new Text('Press the button to find your location'),
                 new RaisedButton(
                   onPressed: () => findLocation(),
-                  child: new Text('Get My Locations'),
+                  child: new Text('Get My Current Location'),
                   color: Theme.of(context).primaryColor,
                 ),
                 new RaisedButton(
-                  onPressed: () => print('reset'),
+                  onPressed: resetMap,
                   child: new Text('Reset Map'),
                   color: Theme.of(context).primaryColor,
                 ),
@@ -92,25 +126,26 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           new Container(
-            margin: new EdgeInsets.symmetric(horizontal: 25.0),
-            child: new Column(
-              children: <Widget>[
-                new TextField(
-                  controller: _latController,
-                  decoration: const InputDecoration(
-                    labelText: 'latitude',
-                  )
-                ),
-                new TextField(
-                    controller: _lngController,
-                    decoration: const InputDecoration(
-                      labelText: 'longitude',
-                    )
-                ),
-                new RaisedButton(onPressed:() => handleSubmit()),
-              ],
-            )
-          )
+              margin: new EdgeInsets.symmetric(horizontal: 25.0),
+              child: new Column(
+                children: <Widget>[
+                  new TextField(
+                      controller: _latController,
+                      decoration: const InputDecoration(
+                        labelText: 'latitude',
+                      )),
+                  new TextField(
+                      controller: _lngController,
+                      decoration: const InputDecoration(
+                        labelText: 'longitude',
+                      )),
+                  new RaisedButton(
+                    onPressed: () => handleSubmit(),
+                    child: new Text('Place Marker'),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ],
+              ))
         ],
       )),
     );
