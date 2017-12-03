@@ -8,4 +8,4 @@ But, you can do quite a bit by leveraging [Google's Static Maps API](https://dev
 
 Also uses [Flutter location plugin](https://github.com/Lyokone/flutterlocation)
 
-![Demo Gif](http://res.cloudinary.com/ericwindmill/image/upload/v1512320062/flutter-static-maps/static-maps-gif.gif)
+![Demo Screenshot](http://res.cloudinary.com/ericwindmill/image/upload/v1512320238/flutter-static-maps/Simulator_Screen_Shot_-_iPhone_6_-_2017-12-03_at_08.56.53.png)
