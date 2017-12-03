@@ -12,7 +12,8 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Static Maps',
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lightBlue,
+        accentColor: Colors.lightBlueAccent,
       ),
       home: new MyHomePage(title: 'Static Maps Demo'),
     );
@@ -36,9 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController _lngController = new TextEditingController();
   int zoom = 4;
 
-  Future<Null> findLocation() async {
+  Future<Null> findUserLocation() async {
     Map<String, double> location;
-
     try {
       location = await _location.getLocation;
       setState(() {
@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (exception) {}
   }
 
-  void handleSubmit() {
+  void handleSubmitNewMarker() {
     String lat;
     String lng;
     lat = _latController.text;
@@ -84,49 +84,55 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: new Container(
-          child: new Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          new Stack(
-            children: <Widget>[
-              new StaticMap(googleMapsApi, locations: locations, zoom: zoom),
-              new Positioned(
-                top: 130.0,
-                right: 10.0,
-                child: new FloatingActionButton(
-                    onPressed: increaseZoom,
-                    child: new Icon(
-                        const IconData(0xe145, fontFamily: 'MaterialIcons'))),
-              ),
-              new Positioned(
-                top: 190.0,
-                right: 10.0,
-                child: new FloatingActionButton(
+        child: new Column(
+          children: <Widget>[
+            // Map Section w/ +/- buttons
+            new Stack(
+              children: <Widget>[
+                new StaticMap(googleMapsApi, locations: locations, zoom: zoom),
+                new Positioned(
+                  top: 130.0,
+                  right: 10.0,
+                  child: new FloatingActionButton(
+                      onPressed: increaseZoom,
+                      child: new Icon(
+                          const IconData(0xe145, fontFamily: 'MaterialIcons'))),
+                ),
+                new Positioned(
+                  top: 190.0,
+                  right: 10.0,
+                  child: new FloatingActionButton(
                     onPressed: decreaseZoom,
                     child: new Icon(
-                        const IconData(0xe15b, fontFamily: 'MaterialIcons'))),
-              ),
-            ],
-          ),
-          new Container(
-            margin: new EdgeInsets.symmetric(vertical: 25.0),
-            child: new Column(
-              children: <Widget>[
-                new RaisedButton(
-                  onPressed: () => findLocation(),
-                  child: new Text('Get My Current Location'),
-                  color: Theme.of(context).primaryColor,
-                ),
-                new RaisedButton(
-                  onPressed: resetMap,
-                  child: new Text('Reset Map'),
-                  color: Theme.of(context).primaryColor,
+                      const IconData(0xe15b, fontFamily: 'MaterialIcons'),
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-          new Container(
-              margin: new EdgeInsets.symmetric(horizontal: 25.0),
+            // Get Location & Reset Button Section
+            new Container(
+              margin: const EdgeInsets.only(top: 5.0),
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  new RaisedButton(
+                    onPressed: findUserLocation,
+                    child: new Text('Get My Current Location'),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  new RaisedButton(
+                    onPressed: resetMap,
+                    child: new Text('Reset Map'),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ],
+              ),
+            ),
+            // Marker Placement Input Section
+            new Container(
+              margin:
+                  new EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
               child: new Column(
                 children: <Widget>[
                   new TextField(
@@ -139,15 +145,20 @@ class _MyHomePageState extends State<MyHomePage> {
                       decoration: const InputDecoration(
                         labelText: 'longitude',
                       )),
-                  new RaisedButton(
-                    onPressed: () => handleSubmit(),
-                    child: new Text('Place Marker'),
-                    color: Theme.of(context).primaryColor,
+                  new Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: new RaisedButton(
+                      onPressed: handleSubmitNewMarker,
+                      child: new Text('Place Marker'),
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                 ],
-              ))
-        ],
-      )),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
