@@ -14,13 +14,15 @@ class StaticMap extends StatefulWidget {
 }
 
 class _StaticMapState extends State<StaticMap> {
+  String startUrl =
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Solid_white.svg/2000px-Solid_white.svg.png';
+  String nextUrl;
   static const int defaultWidth = 600;
   static const int defaultHeight = 400;
   Map<String, String> defaultLocation = {
     "latitude": '37.0902',
     "longitude": '-95.7192'
   };
-  String renderUrl;
 
   _buildUrl(List locations, int width, int height) {
     var finalUri;
@@ -30,8 +32,6 @@ class _StaticMapState extends State<StaticMap> {
         port: 443,
         path: '/maps/api/staticmap',
         queryParameters: {});
-
-    print(widget.locations.length);
 
     if (widget.locations.length == 1) {
       finalUri = baseUri.replace(queryParameters: {
@@ -55,10 +55,9 @@ class _StaticMapState extends State<StaticMap> {
         '${widget.googleMapsApiKey}': ''
       });
     }
-    print(finalUri);
-
     setState(() {
-      renderUrl = finalUri.toString();
+      startUrl = nextUrl ?? startUrl;
+      nextUrl = finalUri.toString();
     });
   }
 
@@ -70,7 +69,9 @@ class _StaticMapState extends State<StaticMap> {
     _buildUrl(widget.locations, widget.width ?? defaultWidth,
         widget.height ?? defaultHeight);
     return new Container(
-         child:  new Image.network(renderUrl),
-    );
+        child: new FadeInImage(
+      placeholder: new NetworkImage(startUrl),
+      image: new NetworkImage(nextUrl),
+    ));
   }
 }

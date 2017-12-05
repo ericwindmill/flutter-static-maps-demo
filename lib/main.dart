@@ -56,6 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       locations.add({"latitude": lat, "longitude": lng});
     });
+    _lngController.clear();
+    _latController.clear();
   }
 
   void increaseZoom() {
@@ -79,86 +81,95 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-      ),
-      body: new Container(
-        child: new Column(
-          children: <Widget>[
-            // Map Section w/ +/- buttons
-            new Stack(
-              children: <Widget>[
-                new StaticMap(googleMapsApi, locations: locations, zoom: zoom),
-                new Positioned(
-                  top: 130.0,
-                  right: 10.0,
-                  child: new FloatingActionButton(
-                      onPressed: increaseZoom,
-                      child: new Icon(
-                          const IconData(0xe145, fontFamily: 'MaterialIcons'))),
+    print(locations.length);
+    var isActiveColor =
+        (locations.length <= 1) ? Theme.of(context).primaryColor : Colors.grey;
+
+    Widget body = new Container(
+      child: new Column(
+        children: <Widget>[
+          // Map Section w/ +/- buttons
+          new Stack(
+            children: <Widget>[
+              new StaticMap(googleMapsApi, locations: locations, zoom: zoom),
+              new Positioned(
+                top: 130.0,
+                right: 10.0,
+                child: new FloatingActionButton(
+                  onPressed: (locations.length <= 1) ? increaseZoom : null,
+                  backgroundColor: isActiveColor,
+                  child: new Icon(
+                    const IconData(0xe145, fontFamily: 'MaterialIcons'),
+                  ),
                 ),
-                new Positioned(
-                  top: 190.0,
-                  right: 10.0,
-                  child: new FloatingActionButton(
-                    onPressed: decreaseZoom,
-                    child: new Icon(
-                      const IconData(0xe15b, fontFamily: 'MaterialIcons'),
-                    ),
+              ),
+              new Positioned(
+                top: 190.0,
+                right: 10.0,
+                child: new FloatingActionButton(
+                  onPressed: (locations.length <= 1) ? decreaseZoom : null,
+                  backgroundColor: isActiveColor,
+                  child: new Icon(
+                    const IconData(0xe15b, fontFamily: 'MaterialIcons'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Get Location & Reset Button Section
+          new Container(
+            margin: const EdgeInsets.only(top: 5.0),
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                new RaisedButton(
+                  onPressed: findUserLocation,
+                  child: new Text('Get My Current Location'),
+                  color: Theme.of(context).primaryColor,
+                ),
+                new RaisedButton(
+                  onPressed: resetMap,
+                  child: new Text('Reset Map'),
+                  color: Theme.of(context).primaryColor,
+                ),
+              ],
+            ),
+          ),
+          // Marker Placement Input Section
+          new Container(
+            margin: new EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
+            child: new Column(
+              children: <Widget>[
+                new TextField(
+                    controller: _latController,
+                    decoration: const InputDecoration(
+                      labelText: 'latitude',
+                    )),
+                new TextField(
+                    controller: _lngController,
+                    decoration: const InputDecoration(
+                      labelText: 'longitude',
+                    )),
+                new Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: new RaisedButton(
+                    onPressed: handleSubmitNewMarker,
+                    child: new Text('Place Marker'),
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               ],
             ),
-            // Get Location & Reset Button Section
-            new Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  new RaisedButton(
-                    onPressed: findUserLocation,
-                    child: new Text('Get My Current Location'),
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  new RaisedButton(
-                    onPressed: resetMap,
-                    child: new Text('Reset Map'),
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ],
-              ),
-            ),
-            // Marker Placement Input Section
-            new Container(
-              margin:
-                  new EdgeInsets.symmetric(horizontal: 25.0, vertical: 25.0),
-              child: new Column(
-                children: <Widget>[
-                  new TextField(
-                      controller: _latController,
-                      decoration: const InputDecoration(
-                        labelText: 'latitude',
-                      )),
-                  new TextField(
-                      controller: _lngController,
-                      decoration: const InputDecoration(
-                        labelText: 'longitude',
-                      )),
-                  new Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: new RaisedButton(
-                      onPressed: handleSubmitNewMarker,
-                      child: new Text('Place Marker'),
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(widget.title),
+      ),
+      body: body,
     );
   }
 }
